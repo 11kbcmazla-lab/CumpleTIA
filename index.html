@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>¡Feliz Cumpleaños, Tía Celia!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Playfair+Display:ital,wght@0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #05060b;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #fce4ec;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 1;
+      touch-action: none;
+    }
+
+    /* Barra Superior */
+    .top-bar {
+      position: absolute;
+      top: 18px;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      pointer-events: none;
+    }
+
+    .title-group {
+      pointer-events: auto;
+      text-shadow: 0 2px 14px rgba(0,0,0,0.85);
+    }
+
+    .title-tag {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: #ffd54f;
+      opacity: 0.9;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .title-main {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 3.2vw, 2.1rem);
+      font-weight: 500;
+      color: #fff5f5;
+      text-shadow: 0 0 22px rgba(255, 64, 129, 0.45);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .btn-glass {
+      background: rgba(22, 16, 26, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 215, 64, 0.3);
+      color: #fff3e0;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .btn-glass:hover {
+      background: rgba(255, 64, 129, 0.25);
+      border-color: rgba(255, 215, 64, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 64, 129, 0.3);
+    }
+
+    /* Panel Compacto Minimalista en la esquina inferior izquierda */
+    .mini-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 10;
+      width: 255px;
+      background: rgba(14, 10, 16, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 215, 64, 0.25);
+      border-radius: 18px;
+      padding: 12px 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .mini-panel.collapsed {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 12, 18, 0.85);
+      border: 1px solid rgba(255, 215, 64, 0.5);
+    }
+
+    .mini-panel.collapsed .panel-content {
+      display: none;
+    }
+
+    .mini-panel.collapsed .collapsed-icon {
+      display: block;
+      font-size: 1.25rem;
+    }
+
+    .collapsed-icon {
+      display: none;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .flower-counter {
+      font-size: 0.74rem;
+      font-weight: 500;
+      color: #ff80ab;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.1rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 4px;
+    }
+    .toggle-btn:hover {
+      color: #fff;
+    }
+
+    .quote-snippet {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.76rem;
+      line-height: 1.35;
+      color: #f8bbd0;
+      margin-bottom: 10px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .btn-gold-mini {
+      background: linear-gradient(135deg, #ffd54f 0%, #ff80ab 100%);
+      color: #210309;
+      font-weight: 600;
+      border: none;
+      padding: 7px 10px;
+      font-size: 0.72rem;
+      border-radius: 12px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(255, 64, 129, 0.35);
+      transition: transform 0.2s;
+    }
+
+    .btn-cake-mini {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 215, 64, 0.4);
+      color: #fff;
+      font-weight: 500;
+      padding: 7px 9px;
+      font-size: 0.72rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-gold-mini:hover, .btn-cake-mini:hover {
+      transform: scale(1.04);
+    }
+
+    .wind-widget {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.65rem;
+      color: #ddd;
+    }
+
+    .wind-widget input[type="range"] {
+      width: 48px;
+      accent-color: #ff4081;
+      height: 4px;
+    }
+
+    /* Modal Carta */
+    .letter-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(4, 3, 6, 0.78);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .letter-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .letter-card {
+      max-width: 450px;
+      width: 100%;
+      background: radial-gradient(circle at 15% 15%, rgba(38, 14, 24, 0.96), rgba(16, 6, 12, 0.98));
+      border: 1px solid rgba(255, 215, 64, 0.45);
+      border-radius: 22px;
+      padding: 32px 28px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.85), 0 0 35px rgba(255, 64, 129, 0.2);
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .letter-modal.active .letter-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .close-card {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .letter-card h3 {
+      font-family: 'Cinzel', serif;
+      color: #ffd740;
+      font-size: 1.35rem;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .letter-card p {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #fce4ec;
+      font-style: italic;
+      margin-bottom: 22px;
+    }
+
+    .card-signature {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      color: #ff80ab;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+      .mini-panel {
+        left: 12px;
+        bottom: 12px;
+        width: 230px;
+        padding: 10px 12px;
+      }
+      .top-bar {
+        padding: 0 16px;
+        top: 14px;
+      }
+      .title-tag {
+        font-size: 0.65rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="gardenCanvas"></canvas>
+
+  <!-- Barra Superior -->
+  <header class="top-bar">
+    <div class="title-group">
+      <div class="title-tag">🎂 En su día especial</div>
+      <h1 class="title-main">¡Feliz Cumpleaños, Tía Celia!</h1>
+    </div>
+    <div class="top-actions">
+      <button class="btn-glass" id="btnLetter" aria-label="Abrir Mensaje">
+        <span>💌</span>
+        <span>Para Tía Celia</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Panel Pequeño en la esquina inferior izquierda -->
+  <aside class="mini-panel" id="miniPanel">
+    <div class="collapsed-icon" title="Expandir">🌹</div>
+    
+    <div class="panel-content">
+      <div class="panel-header">
+        <span class="flower-counter" id="flowerCount">🌹 0 rosas de fiesta</span>
+        <button class="toggle-btn" id="toggleCollapse" title="Minimizar panel">—</button>
+      </div>
+
+      <p class="quote-snippet" id="quoteSnippet">
+        «Que Dios y la vida la colmen de alegría, salud y paz, querida tía Celia.»
+      </p>
+
+      <div class="action-row">
+        <button class="btn-gold-mini" id="btnSpawn">🌹 Sembrar</button>
+        <button class="btn-cake-mini" id="btnBlow" title="Soplar o encender velitas">🎂 Velas</button>
+        <div class="wind-widget" title="Brisa">
+          <span>🍃</span>
+          <input type="range" id="windSlider" min="5" max="45" value="16">
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Modal Felicitación Familiar -->
+  <div class="letter-modal" id="letterModal">
+    <div class="letter-card">
+      <button class="close-card" id="btnCloseLetter">&times;</button>
+      <div style="font-size: 2.2rem; margin-bottom: 8px;">🎂✨</div>
+      <h3>Querida Tía Celia</h3>
+      <p>
+        Hoy celebramos su vida y la bendición que representa para toda nuestra familia. 
+        Estas rosas rojas naturales y este pastel con velitas fueron creados para homenajearla en su día. 
+        Que este nuevo año le traiga abundante salud, dicha sincera, amor y momentos hermosos junto a quienes más la queremos.
+      </p>
+      <div class="card-signature">— Con todo el cariño y respeto de su Sobrino</div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gardenCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    // Audio procedural Web Audio API (Soplido y Campanadas alegres)
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSoftChime() {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const freqs = [523.25, 659.25, 783.99, 880.00, 1046.50];
+        const f = freqs[Math.floor(Math.random() * freqs.length)];
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.045, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.8);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.8);
+      } catch (e) {}
+    }
+
+    function playCelebrationFanfare() {
+      if (!audioCtx) return;
+      try {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+          gain.gain.setValueAtTime(0.05, audioCtx.currentTime + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + idx * 0.08 + 1.2);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + idx * 0.08);
+          osc.stop(audioCtx.currentTime + idx * 0.08 + 1.2);
+        });
+      } catch (e) {}
+    }
+
+    // Colecciones de la escena
+    let flowers = [];
+    let petals = [];
+    let stars = [];
+    let fireflies = [];
+    let grassBlades = [];
+    let confetti = [];
+
+    let windTarget = 16;
+    let currentWind = 16;
+    let globalTime = 0;
+
+    // Estado Torta de Cumpleaños
+    const cakeState = {
+      x: width * 0.5,
+      y: height - 60,
+      width: 170,
+      height: 120,
+      candlesLit: true,
+      smokeParticles: []
+    };
+
+    // Paletas aterciopeladas de Rosas Rojas
+    const roseTones = [
+      { dark: '#2b0207', mid: '#8a0a19', main: '#ba1426', light: '#e53935', rim: '#ff8a80' },
+      { dark: '#38040a', mid: '#990c1f', main: '#c62828', light: '#ef5350', rim: '#ffcdd2' },
+      { dark: '#240206', mid: '#7f0817', main: '#ad1457', light: '#d81b60', rim: '#f48fb1' }
+    ];
+
+    // Clase Rosa Roja de Aspecto Natural
+    class NaturalRedRose {
+      constructor(x, y, scale = 1) {
+        this.baseX = x;
+        this.baseY = y || height + 25;
+        this.height = (height * (0.36 + Math.random() * 0.36)) * scale;
+        this.scale = scale;
+        this.palette = roseTones[Math.floor(Math.random() * roseTones.length)];
+
+        this.headSize = (25 + Math.random() * 15) * scale;
+        this.stemWidth = (4.5 + Math.random() * 2.5) * scale;
+        this.swaySpeed = 0.7 + Math.random() * 0.6;
+        this.anglePhase = Math.random() * Math.PI * 2;
+
+        this.growth = 0.05;
+        this.targetGrowth = 1;
+
+        // Hojas dentadas de rosal
+        this.leafSide = Math.random() > 0.5 ? 1 : -1;
+        this.leafHeightRatio = 0.32 + Math.random() * 0.28;
+      }
+
+      update(wind) {
+        if (this.growth < this.targetGrowth) {
+          this.growth += (this.targetGrowth - this.growth) * 0.05;
+        }
+        const naturalOsc = Math.sin(globalTime * this.swaySpeed + this.anglePhase);
+        const windPush = (wind / 30) * 26;
+        this.currentBend = (naturalOsc * 13 + windPush) * this.growth;
+      }
+
+      draw() {
+        const currentH = this.height * this.growth;
+        const tipX = this.baseX + this.currentBend;
+        const tipY = this.baseY - currentH;
+
+        const ctrlX = this.baseX + this.currentBend * 0.35;
+        const ctrlY = this.baseY - currentH * 0.55;
+
+        // Tallo con textura
+        ctx.beginPath();
+        ctx.moveTo(this.baseX, this.baseY);
+        ctx.quadraticCurveTo(ctrlX, ctrlY, tipX, tipY);
+        ctx.strokeStyle = '#1d3e1b';
+        ctx.lineWidth = this.stemWidth;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // Pequeñas espinas botánicas
+        const thornY = this.baseY - currentH * 0.45;
+        const thornX = this.baseX + this.currentBend * 0.45;
+        ctx.beginPath();
+        ctx.moveTo(thornX, thornY);
+        ctx.lineTo(thornX - 7 * this.scale, thornY - 3 * this.scale);
+        ctx.lineTo(thornX - 2 * this.scale, thornY + 5 * this.scale);
+        ctx.fillStyle = '#4a1218';
+        ctx.fill();
+
+        // Hoja de rosa
+        const leafY = this.baseY - currentH * this.leafHeightRatio;
+        const leafX = this.baseX + this.currentBend * this.leafHeightRatio;
+        ctx.save();
+        ctx.translate(leafX, leafY);
+        ctx.rotate((this.leafSide * 0.65) + (this.currentBend * 0.01));
+        
+        ctx.beginPath();
+        ctx.ellipse(this.leafSide * 18 * this.scale, 0, 20 * this.scale, 8 * this.scale, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#265324';
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(102, 187, 106, 0.45)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(this.leafSide * 34 * this.scale, 0);
+        ctx.stroke();
+        ctx.restore();
+
+        // Capullo y Pétalos de Rosa
+        ctx.save();
+        ctx.translate(tipX, tipY);
+        ctx.rotate(this.currentBend * 0.016);
+
+        const sz = this.headSize * this.growth;
+
+        // Sépalos verdes en la base del capullo
+        for (let s = -1; s <= 1; s += 2) {
+          ctx.beginPath();
+          ctx.moveTo(0, 4);
+          ctx.quadraticCurveTo(s * sz * 0.6, 12, s * sz * 0.75, 4);
+          ctx.quadraticCurveTo(s * sz * 0.4, 0, 0, 0);
+          ctx.fillStyle = '#1e3f1c';
+          ctx.fill();
+        }
+
+        // Halo suave de terciopelo
+        const glow = ctx.createRadialGradient(0, 0, sz * 0.2, 0, 0, sz * 2.3);
+        glow.addColorStop(0, 'rgba(216, 27, 96, 0.25)');
+        glow.addColorStop(1, 'rgba(216, 27, 96, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(0, 0, sz * 2.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pétalos externos curvados
+        const outerPetals = 7;
+        for (let i = 0; i < outerPetals; i++) {
+          const angle = (Math.PI * 2 / outerPetals) * i;
+          ctx.save();
+          ctx.rotate(angle);
+          ctx.beginPath();
+          ctx.ellipse(sz * 0.75, 0, sz * 0.78, sz * 0.44, 0, 0, Math.PI * 2);
+          const pGrad = ctx.createRadialGradient(sz * 0.75, 0, 2, sz * 0.75, 0, sz * 0.8);
+          pGrad.addColorStop(0, this.palette.light);
+          pGrad.addColorStop(0.65, this.palette.main);
+          pGrad.addColorStop(1, this.palette.mid);
+          ctx.fillStyle = pGrad;
+          ctx.fill();
+
+          ctx.strokeStyle = this.palette.rim;
+          ctx.lineWidth = 0.75;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Corona intermedia de pétalos envolventes
+        const midPetals = 5;
+        for (let i = 0; i < midPetals; i++) {
+          const angle = (Math.PI * 2 / midPetals) * i + 0.35;
+          ctx.save();
+          ctx.rotate(angle);
+          ctx.beginPath();
+          ctx.ellipse(sz * 0.4, 0, sz * 0.52, sz * 0.34, 0, 0, Math.PI * 2);
+          ctx.fillStyle = this.palette.main;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // Núcleo espiral de la rosa
+        ctx.beginPath();
+        ctx.arc(0, 0, sz * 0.35, 0, Math.PI * 2);
+        const coreGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, sz * 0.35);
+        coreGrad.addColorStop(0, this.palette.dark);
+        coreGrad.addColorStop(0.7, this.palette.mid);
+        coreGrad.addColorStop(1, this.palette.main);
+        ctx.fillStyle = coreGrad;
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    // Dibujo de la Torta de Cumpleaños para Tía Celia
+    function drawBirthdayCake() {
+      const cx = cakeState.x;
+      const cy = cakeState.y;
+      const cw = cakeState.width;
+
+      ctx.save();
+
+      // Pedestal / Plato
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 8, cw * 0.65, 14, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 215, 64, 0.4)';
+      ctx.fill();
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Nivel 1 (Base Pastel Chocolate/Vainilla)
+      const h1 = 44;
+      const y1 = cy - h1;
+      const g1 = ctx.createLinearGradient(cx - cw * 0.5, 0, cx + cw * 0.5, 0);
+      g1.addColorStop(0, '#3e1b1e');
+      g1.addColorStop(0.5, '#5c2227');
+      g1.addColorStop(1, '#3e1b1e');
+      ctx.fillStyle = g1;
+      ctx.beginPath();
+      ctx.roundRect(cx - cw * 0.5, y1, cw, h1, [0, 0, 8, 8]);
+      ctx.fill();
+
+      // Glaseado de crema con chorreado
+      ctx.fillStyle = '#fff5f8';
+      ctx.beginPath();
+      ctx.ellipse(cx, y1, cw * 0.5, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Letras doradas en el pastel: "Tía Celia ✨"
+      ctx.font = "600 13px 'Playfair Display', serif";
+      ctx.fillStyle = "#ffd54f";
+      ctx.textAlign = "center";
+      ctx.shadowColor = "rgba(0,0,0,0.8)";
+      ctx.shadowBlur = 4;
+      ctx.fillText("Tía Celia ✨", cx, y1 + 26);
+      ctx.shadowBlur = 0;
+
+      // Nivel 2 (Piso superior)
+      const w2 = cw * 0.7;
+      const h2 = 36;
+      const y2 = y1 - h2 + 4;
+      const g2 = ctx.createLinearGradient(cx - w2 * 0.5, 0, cx + w2 * 0.5, 0);
+      g2.addColorStop(0, '#880e4f');
+      g2.addColorStop(0.5, '#ad1457');
+      g2.addColorStop(1, '#880e4f');
+      ctx.fillStyle = g2;
+      ctx.beginPath();
+      ctx.roundRect(cx - w2 * 0.5, y2, w2, h2, [0, 0, 6, 6]);
+      ctx.fill();
+
+      // Crema superior nivel 2
+      ctx.fillStyle = '#fffafc';
+      ctx.beginPath();
+      ctx.ellipse(cx, y2, w2 * 0.5, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 3 Velitas de cumpleaños
+      const candlePositions = [cx - 24, cx, cx + 24];
+      candlePositions.forEach((canX, index) => {
+        const canY = y2 - 18;
+        // Cuerpo vela
+        ctx.fillStyle = index === 1 ? '#ffd54f' : '#ff80ab';
+        ctx.fillRect(canX - 2.5, canY, 5, 18);
+
+        // Mecha
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(canX, canY);
+        ctx.lineTo(canX, canY - 5);
+        ctx.stroke();
+
+        // Si están encendidas, dibujar flama animada
+        if (cakeState.candlesLit) {
+          const flameOsc = Math.sin(globalTime * 8 + index) * 1.5;
+          const flameY = canY - 9;
+
+          // Resplandor de la flama
+          const fGlow = ctx.createRadialGradient(canX, flameY, 1, canX, flameY, 14);
+          fGlow.addColorStop(0, 'rgba(255, 235, 59, 0.7)');
+          fGlow.addColorStop(0.5, 'rgba(255, 112, 67, 0.3)');
+          fGlow.addColorStop(1, 'rgba(255, 112, 67, 0)');
+          ctx.fillStyle = fGlow;
+          ctx.beginPath();
+          ctx.arc(canX, flameY, 14, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Flama central
+          ctx.fillStyle = '#fff9c4';
+          ctx.beginPath();
+          ctx.ellipse(canX + flameOsc * 0.4, flameY, 3, 6, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Humo si se soplaron
+      for (let i = cakeState.smokeParticles.length - 1; i >= 0; i--) {
+        const p = cakeState.smokeParticles[i];
+        p.y -= 0.8;
+        p.x += Math.sin(p.y * 0.05) * 0.5;
+        p.alpha -= 0.015;
+        ctx.fillStyle = `rgba(200, 200, 210, ${Math.max(0, p.alpha)})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        if (p.alpha <= 0) cakeState.smokeParticles.splice(i, 1);
+      }
+
+      ctx.restore();
+    }
+
+    // Soplar / Encender velitas con confeti
+    function blowOrLightCandles() {
+      initAudio();
+      cakeState.candlesLit = !cakeState.candlesLit;
+
+      if (!cakeState.candlesLit) {
+        // Soplar velitas -> Humo, confeti y fanfarria
+        playCelebrationFanfare();
+        const candlePositions = [cakeState.x - 24, cakeState.x, cakeState.x + 24];
+        candlePositions.forEach(canX => {
+          for (let i = 0; i < 6; i++) {
+            cakeState.smokeParticles.push({
+              x: canX,
+              y: cakeState.y - 110,
+              size: 2.5 + Math.random() * 3,
+              alpha: 0.8
+            });
+          }
+        });
+
+        // Lanzar confeti festivo
+        for (let i = 0; i < 45; i++) {
+          confetti.push(new ConfettiParticle(cakeState.x, cakeState.y - 110));
+        }
+
+        const quote = document.getElementById('quoteSnippet');
+        if (quote) quote.textContent = "«¡Deseo de cumpleaños pedido para nuestra querida Tía Celia!»";
+      } else {
+        // Reencender velitas
+        playSoftChime();
+        const quote = document.getElementById('quoteSnippet');
+        if (quote) quote.textContent = "«Que Dios y la vida la colmen de alegría, salud y paz, querida tía Celia.»";
+      }
+    }
+
+    // Partículas de Confeti Festivo
+    class ConfettiParticle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = 5 + Math.random() * 6;
+        this.vx = (Math.random() - 0.5) * 12;
+        this.vy = -(6 + Math.random() * 8);
+        this.gravity = 0.25;
+        this.rot = Math.random() * Math.PI * 2;
+        this.vRot = (Math.random() - 0.5) * 0.2;
+        const colors = ['#ffd700', '#ff4081', '#00e676', '#00e5ff', '#ff9100', '#ffffff'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+      update() {
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rot += this.vRot;
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rot);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.size * 0.5, -this.size * 0.5, this.size, this.size * 0.6);
+        ctx.restore();
+      }
+    }
+
+    // Briznas de hierba silvestre
+    class Grass {
+      constructor(x, y, h) {
+        this.x = x;
+        this.y = y;
+        this.h = h;
+        this.offset = Math.random() * 10;
+        this.color = Math.random() > 0.5 ? '#163314' : '#0f240e';
+      }
+      draw(wind) {
+        const bend = Math.sin(globalTime * 2 + this.offset) * 8 + (wind * 0.5);
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.quadraticCurveTo(this.x + bend * 0.5, this.y - this.h * 0.5, this.x + bend, this.y - this.h);
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2.4;
+        ctx.stroke();
+      }
+    }
+
+    // Estrellas doradas de bendición y felicitación al tocar
+    class FloatingStar {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = 7 + Math.random() * 7;
+        this.vy = -(1.2 + Math.random() * 1.5);
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.alpha = 1;
+        this.decay = 0.012 + Math.random() * 0.015;
+      }
+      update() {
+        this.y += this.vy;
+        this.x += this.vx;
+        this.alpha -= this.decay;
+      }
+      draw() {
+        if (this.alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.translate(this.x, this.y);
+        ctx.fillStyle = '#ffd54f';
+        ctx.beginPath();
+        const spikes = 5;
+        const outer = this.size;
+        const inner = this.size * 0.45;
+        for (let i = 0; i < spikes * 2; i++) {
+          const r = i % 2 === 0 ? outer : inner;
+          const a = (Math.PI / spikes) * i;
+          const sx = Math.cos(a) * r;
+          const sy = Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Pétalos de rosa roja flotando al viento
+    class FloatingRosePetal {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = -20;
+        this.size = 8 + Math.random() * 8;
+        this.vy = 1.2 + Math.random() * 1.6;
+        this.rot = Math.random() * Math.PI * 2;
+        this.vRot = (Math.random() - 0.5) * 0.04;
+        this.color = roseTones[Math.floor(Math.random() * roseTones.length)].main;
+      }
+      update(wind) {
+        this.x += (wind * 0.12) + Math.sin(this.y * 0.02) * 1.2;
+        this.y += this.vy;
+        this.rot += this.vRot;
+        if (this.y > height + 20 || this.x > width + 50) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rot);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.size, this.size * 0.55, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Luciérnagas doradas
+    class Firefly {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height * 0.8;
+        this.baseX = this.x;
+        this.baseY = this.y;
+        this.radius = 1.2 + Math.random() * 1.6;
+        this.phase = Math.random() * Math.PI * 2;
+        this.speed = 0.5 + Math.random() * 0.8;
+      }
+      update() {
+        this.x = this.baseX + Math.sin(globalTime * this.speed + this.phase) * 35;
+        this.y = this.baseY + Math.cos(globalTime * this.speed * 0.7 + this.phase) * 25;
+      }
+      draw() {
+        const glow = (Math.sin(globalTime * 3 + this.phase) + 1) / 2;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius + glow * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 215, 64, ${0.3 + glow * 0.6})`;
+        ctx.fill();
+      }
+    }
+
+    function initScene() {
+      flowers = [];
+      petals = [];
+      fireflies = [];
+      grassBlades = [];
+      confetti = [];
+
+      cakeState.x = width * 0.5;
+      cakeState.y = height - 55;
+
+      // Césped
+      const grassCount = Math.floor(width / 7);
+      for (let i = 0; i < grassCount; i++) {
+        grassBlades.push(new Grass(i * 7 + Math.random() * 4, height, 85 + Math.random() * 95));
+      }
+
+      // Rosas rojas distribuidas (dejando espacio central para la torta)
+      const count = Math.max(28, Math.floor(width / 26));
+      for (let i = 0; i < count; i++) {
+        const x = (width / count) * i + (Math.random() * 20 - 10);
+        // Dejar un pequeño claro en el centro para la torta
+        if (Math.abs(x - cakeState.x) < 85) continue;
+
+        const scale = 0.7 + Math.random() * 0.45;
+        flowers.push(new NaturalRedRose(x, height + 15, scale));
+      }
+
+      flowers.sort((a, b) => a.scale - b.scale);
+
+      for (let i = 0; i < 28; i++) petals.push(new FloatingRosePetal());
+      for (let i = 0; i < 35; i++) fireflies.push(new Firefly());
+
+      updateCounter();
+    }
+
+    function addFlowerCluster(touchX, touchY) {
+      initAudio();
+      playSoftChime();
+
+      const newFl = new NaturalRedRose(touchX, height + 15, 0.85 + Math.random() * 0.4);
+      newFl.growth = 0.01;
+      flowers.push(newFl);
+      flowers.sort((a, b) => a.scale - b.scale);
+
+      // Nacen estrellas doradas festivas
+      for (let i = 0; i < 4; i++) {
+        stars.push(new FloatingStar(touchX + (Math.random() * 30 - 15), touchY || (height * 0.6)));
+      }
+
+      updateCounter();
+    }
+
+    function updateCounter() {
+      const el = document.getElementById('flowerCount');
+      if (el) el.textContent = `🌹 ${flowers.length} rosas de fiesta`;
+    }
+
+    // Bucle de animación
+    function animate() {
+      globalTime += 0.02;
+      currentWind += (windTarget - currentWind) * 0.04;
+
+      // Fondo nocturno festivo
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, '#070409');
+      bgGrad.addColorStop(0.65, '#160814');
+      bgGrad.addColorStop(1, '#0c160e');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Resplandor de luna suave
+      const moonGrad = ctx.createRadialGradient(width * 0.82, height * 0.16, 5, width * 0.82, height * 0.16, 85);
+      moonGrad.addColorStop(0, 'rgba(255, 248, 225, 0.4)');
+      moonGrad.addColorStop(0.35, 'rgba(255, 128, 171, 0.1)');
+      moonGrad.addColorStop(1, 'rgba(255, 128, 171, 0)');
+      ctx.fillStyle = moonGrad;
+      ctx.beginPath();
+      ctx.arc(width * 0.82, height * 0.16, 85, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Luciérnagas
+      fireflies.forEach(f => {
+        f.update();
+        f.draw();
+      });
+
+      // Césped
+      grassBlades.forEach(g => g.draw(currentWind));
+
+      // Rosas Rojas
+      flowers.forEach(f => {
+        f.update(currentWind);
+        f.draw();
+      });
+
+      // Torta de Cumpleaños
+      drawBirthdayCake();
+
+      // Confeti
+      for (let i = confetti.length - 1; i >= 0; i--) {
+        confetti[i].update();
+        confetti[i].draw();
+        if (confetti[i].y > height + 20) confetti.splice(i, 1);
+      }
+
+      // Estrellas doradas
+      for (let i = stars.length - 1; i >= 0; i--) {
+        stars[i].update();
+        stars[i].draw();
+        if (stars[i].alpha <= 0) stars.splice(i, 1);
+      }
+
+      // Pétalos de rosa
+      petals.forEach(p => {
+        p.update(currentWind);
+        p.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    // Eventos y resize
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initScene();
+    });
+
+    window.addEventListener('pointerdown', (e) => {
+      // Si toca la UI, no generar rosas
+      if (e.target.closest('.mini-panel') || e.target.closest('.top-bar') || e.target.closest('.letter-modal')) {
+        return;
+      }
+
+      // Detectar clic directo sobre la torta para soplar velitas
+      const distToCakeX = Math.abs(e.clientX - cakeState.x);
+      const distToCakeY = Math.abs(e.clientY - (cakeState.y - 45));
+      if (distToCakeX < 75 && distToCakeY < 75) {
+        blowOrLightCandles();
+        return;
+      }
+
+      addFlowerCluster(e.clientX, e.clientY);
+    });
+
+    // Control de viento
+    document.getElementById('windSlider').addEventListener('input', (e) => {
+      windTarget = parseFloat(e.target.value);
+    });
+
+    // Botón Sembrar Rosas
+    document.getElementById('btnSpawn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      addFlowerCluster(width * (0.2 + Math.random() * 0.6), height * 0.6);
+    });
+
+    // Botón Soplar/Velas
+    document.getElementById('btnBlow').addEventListener('click', (e) => {
+      e.stopPropagation();
+      blowOrLightCandles();
+    });
+
+    // Colapsar/Expandir panel pequeño
+    const miniPanel = document.getElementById('miniPanel');
+    const toggleCollapse = document.getElementById('toggleCollapse');
+
+    toggleCollapse.addEventListener('click', (e) => {
+      e.stopPropagation();
+      miniPanel.classList.add('collapsed');
+    });
+
+    miniPanel.addEventListener('click', () => {
+      if (miniPanel.classList.contains('collapsed')) {
+        miniPanel.classList.remove('collapsed');
+      }
+    });
+
+    // Modal Mensaje
+    const letterModal = document.getElementById('letterModal');
+    const btnLetter = document.getElementById('btnLetter');
+    const btnCloseLetter = document.getElementById('btnCloseLetter');
+
+    btnLetter.addEventListener('click', () => {
+      initAudio();
+      playSoftChime();
+      letterModal.classList.add('active');
+    });
+
+    btnCloseLetter.addEventListener('click', () => {
+      letterModal.classList.remove('active');
+    });
+
+    letterModal.addEventListener('click', (e) => {
+      if (e.target === letterModal) {
+        letterModal.classList.remove('active');
+      }
+    });
+
+    // Inicios
+    initScene();
+    animate();
+  </script>
+</body>
+</html>
